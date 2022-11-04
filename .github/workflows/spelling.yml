@@ -43,6 +43,10 @@ jobs:
       # note: If you use only_check_changed_files, you do not want cancel-in-progress
       cancel-in-progress: true
     steps:
+    - name: checkout
+      uses: "actions/checkout@v2"
+    - name: debug
+      run: "ls -l"
     - name: check-spelling
       id: spelling
       uses: ./actions/check-spelling
@@ -52,5 +56,3 @@ jobs:
         # spell_check_this: check-spelling/spell-check-this@prerelease
         post_comment: 0
         experimental_apply_changes_via_bot: 1
-    - name: debug
-      run: ls -l
