@@ -1,0 +1,265 @@
+name: 'Check Spelling'
+description: 'Spell check commits'
+author: 'jsoref'
+branding:
+  icon: 'edit-3'
+  color: 'red'
+inputs:
+  GITHUB_TOKEN:
+    description: 'The GITHUB_TOKEN secret'
+    default: "${{ github.token }}"
+    required: true
+  bucket:
+    description: 'Container for spelling configuration'
+    required: false
+  project:
+    description: 'Folder/Branch within bucket containing spelling configuration'
+    required: false
+  config:
+    description: 'Spelling configuration directory'
+    default: ".github/actions/spelling"
+    required: false
+  experimental_path:
+    description: 'Directory root to check for spelling (note that bucket/project/config are independent of this)'
+    default: '.'
+    required: false
+  dictionary_url:
+    description: "Location of dictionary (if you aren't providing one in your repository)"
+    default: 'https://raw.githubusercontent.com/check-spelling/check-spelling/dictionary-$DICTIONARY_VERSION/dict.txt'
+    required: false
+  dictionary_version:
+    description: 'Version of the dictionary (only used if the url includes $DICTIONARY_VERSION)'
+    default: "20200211"
+    required: false
+  debug:
+    description: 'Debug'
+    required: false
+  experimental_apply_changes_via_bot:
+    description: '(Experimental) Allow users to quote-reply to the bot comment to update the PR'
+    default: "0"
+    required: false
+  experimental_parallel_jobs:
+    description: 'Number of CPUs available for running checks'
+    required: false
+    default: '2'
+  post_comment:
+    description: 'Post comment with report'
+    required: false
+    default: '1'
+  capture_output_unknown_words:
+    description: ''
+    required: false
+    deprecationMessage: 'Obsolete: outputs are always captured'
+    default: ''
+  capture_output_stale_words:
+    description: ''
+    deprecationMessage: 'Obsolete: outputs are always captured'
+    required: false
+    default: ''
+  capture_output_skipped_files:
+    description: ''
+    deprecationMessage: 'Obsolete: outputs are always captured'
+    required: false
+    default: ''
+  dictionary_source_prefixes:
+    description: 'JSON map of prefixes for dictionary urls'
+    required: false
+    default: '{"cspell": "https://raw.githubusercontent.com/check-spelling/cspell-dicts/v20220427/dictionaries/"}'
+  extra_dictionaries:
+    description: 'Space delimited list of URLs (or `prefix:`+path) to additional word lists'
+    required: false
+    default: ''
+  check_extra_dictionaries:
+    description: 'Compare unknown tokens against these dictionaries and suggest if applicable'
+    required: false
+    default:
+      cspell:ada/ada.txt
+      cspell:aws/aws.txt
+      cspell:bash/bash-words.txt
+      cspell:companies/companies.txt
+      cspell:csharp/csharp.txt
+      cspell:css/css.txt
+      cspell:django/django.txt
+      cspell:dotnet/dotnet.txt
+      cspell:elixir/elixir.txt
+      cspell:en_GB/src/wordsEnGb.txt
+      cspell:filetypes/filetypes.txt
+      cspell:fonts/fonts.txt
+      cspell:fullstack/fullstack.txt
+      cspell:golang/go.txt
+      cspell:haskell/haskell.txt
+      cspell:html/html.txt
+      cspell:java/java.txt
+      cspell:latex/latex.txt
+      cspell:lua/lua.txt
+      cspell:node/node.txt
+      cspell:npm/npm.txt
+      cspell:php/php.txt
+      cspell:python/python.txt
+      cspell:ruby/ruby.txt
+      cspell:rust/rust.txt
+      cspell:scala/scala.txt
+  extra_dictionary_limit:
+    description: 'Limit the number of suggested extra dictionaries.'
+    required: false
+    default: '5'
+  event_aliases:
+    description: >-
+      Try to treat a GitHub event "a" as GitHub event "b" (JSON map).
+      If this flag was available before this tool recognized `pull_request_target`,
+      `{"pull_request_target":"pull_request"}` would have mapped it to `pull_request`.
+    required: false
+    default: ''
+  shortest_word:
+    description: 'Shortest word'
+    required: false
+    default: '3'
+  longest_word:
+    description: 'Longest word'
+    required: false
+    default: ''
+  experimental_commit_note:
+    description: 'If set, commit updates to expect automatically with this note'
+    required: false
+    default: ''
+  suppress_push_for_open_pull_request:
+    description: "If set, do not do work in response to `push` if there is an open `pull` request to the repository for the branch (this assumes there's a `pull_request_target` event configured)."
+    required: false
+    default: ''
+  report_title_suffix:
+    description: 'Suffix for report title (useful if you are using a matrix strategy or are using experimental_path)'
+    required: false
+    default: ''
+  only_check_changed_files:
+    description: 'If set, only check files changed since the last push'
+    required: false
+    default: ''
+  custom_task:
+    description: 'Run an internal task instead of responding to a GitHub event. Values: "comment"'
+    # This will be superseded by task
+    required: false
+    default: ''
+  internal_state_directory:
+    description: 'Used for passing internal state from the (default) check mode to the comment module'
+    required: false
+    default: ''
+  check_file_names:
+    description: 'Spell check file paths'
+    required: false
+    default: ''
+  anonymize_secpoll_source:
+    description: 'Perform secpoll queries via a public dns server'
+    required: false
+    default: ''
+  ignore_security_advisory:
+    description: 'Set to the value of the current security advisory to accept the reported risk -- value must match -- do not set if there is no current advisory'
+    required: false
+    default: ''
+  largest_file:
+    description: 'File size limit'
+    required: false
+    default: '1048576'
+  unknown_word_limit:
+    description: 'Only report an unknown word this many times'
+    required: false
+    default: '5'
+  warnings:
+    description: 'List of events that are not errors (anything not on this list will result in an :x:)'
+    required: false
+    default: bad-regex,deprecated-feature,large-file,limited-references,no-newline-at-eof,noisy-file,non-alpha-in-dictionary,unexpected-line-ending,whitespace-in-dictionary
+  quit_without_error:
+    description: 'Suppress failure code exit code -- it will be available via outputs.result_code'
+    required: false
+    default: ''
+  spell_check_this:
+    description: 'Repository with default configuration to use if no configuration is found'
+    required: false
+    default: ''
+  ssh_key:
+    description: 'Key for checking out / pushing to updates (and trigger workflow cascades)'
+    required: false
+    default: ''
+  checkout:
+    description: 'Whether to check out a repository'
+    required: false
+    default: ''
+  task:
+    description: 'Task to perform (spelling, comment, ...)'
+    required: false
+    default: ''
+
+outputs:
+  unknown_words:
+    description: "Unrecognized words (should be added to expect.txt)"
+    value: ${{ steps.spelling.outputs.unknown_words }}
+  stale_words:
+    description: "Stale words (should be removed from expect.txt) as an output"
+    value: ${{ steps.spelling.outputs.stale_words }}
+  skipped_files:
+    description: "Skipped files (could be added to excludes.txt)"
+    value: ${{ steps.spelling.outputs.skipped_files }}
+  suggested_dictionaries:
+    description: "Suggested dictionaries (could be added to extra_dictionaries)"
+    value: ${{ steps.spelling.outputs.suggested_dictionaries }}
+  warnings:
+    description: "Warnings"
+    value: ${{ steps.spelling.outputs.warnings }}
+  internal_state_directory:
+    description: 'Used for passing internal state from the (default) check mode to the comment module'
+    value: ${{ steps.spelling.outputs.internal_state_directory }}
+  result_code:
+    description: "Result (indicates unrecognized words were found or comment needs to be collapsed)"
+    value: ${{ steps.spelling.outputs.result_code }}
+  followup:
+    description: "Next task"
+    value: ${{ steps.spelling.outputs.followup }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: checkout
+      if: inputs.checkout && inputs.checkout != 'false' && !inputs.custom_task
+      uses: actions/checkout@v3
+      with:
+        path: ${{ inputs.experimental_path }}
+        ssh-key: ${{ inputs.ssh_key }}
+    - name: checkout-merge
+      if: (contains(github.event_name, 'pull_request')) && (inputs.checkout && inputs.checkout != 'false' && !inputs.custom_task && !inputs.task)
+      uses: check-spelling/checkout-merge@v0.0.0
+      with:
+        path: ${{ inputs.experimental_path }}
+    - name: prepare
+      if: inputs.task && inputs.task != 'spelling'
+      run: |
+        mkdir -p /tmp/data;
+        echo "INPUT_INTERNAL_STATE_DIRECTORY=/tmp/data" >> "$GITHUB_ENV"
+      shell: bash
+    - name: retrieve-comment
+      if: inputs.task && inputs.task != 'spelling'
+      uses: actions/download-artifact@v3
+      with:
+        name: "check-spelling-comment"
+        path: /tmp/data
+    - name: check-spelling
+      id: spelling
+      if: env.MERGE_FAILED != '1'
+      env:
+        INPUTS: ${{ toJSON(inputs) }}
+        DEBUG: ${{ inputs.debug }}
+        spellchecker: ${{ github.action_path }}
+      run:
+        spellchecker=$(echo $spellchecker| perl -pe 's{/$}{}')
+        $spellchecker/unknown-words.sh
+      shell: bash
+    - name: store-comment
+      if: (contains(github.event_name, 'pull_request') ||
+          github.event_name == 'push') &&
+        inputs.custom_task != 'comment' &&
+        (failure() || steps.spelling.outputs.followup) &&
+        steps.spelling.outputs.internal_state_directory
+      uses: actions/upload-artifact@v3
+      with:
+        retention-days: 1
+        name: "check-spelling-comment"
+        path: |
+          ${{ steps.spelling.outputs.internal_state_directory }}
