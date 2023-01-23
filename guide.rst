@@ -11,10 +11,10 @@ Here are some text and some intentioal spelling error.
 .. _mylabel:
 
 .. figure:: https://www.google.com/images/hpp/ribbon-black-96x136.png
-   :scale: 50 %
+   :scale: 100 %
    :alt: map to buried treasure
 
-   Caption Figure
+   This is the figure capture.
 
 +--------------------------+-----------------------+
 | Symbol                   | Meaning               |
