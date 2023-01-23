@@ -9,6 +9,8 @@ This is a heading
 Here are some text and some intentioal spelling error.
 
 .. _mylabel:
+hello
+
 .. figure:: picture.jpg
    :scale: 50 %
    :alt: map to buried treasure
